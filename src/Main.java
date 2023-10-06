@@ -16,8 +16,12 @@ public class Main {
 
         String indexR;
         while ((indexR = bufferedReader.readLine()) != null) {
-            String[] dados = indexR.split("\n");
-            System.out.print();
+            String[] dados = indexR.split(",");
+            System.out.println(indexR);
+
+
+
+            }
 
         }
 
