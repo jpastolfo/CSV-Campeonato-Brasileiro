@@ -50,7 +50,7 @@ public class Main {
 
         Entry<String, Integer> maiorPlacar = getScoreMatchWithMostGoals(fullDataPath);
         System.out.println("O placar da partida com mais gols foi: " +
-                maiorPlacar.getKey().replace("\"", "") + ", X " + maiorPlacar.getValue() + " gols");
+                maiorPlacar.getKey());
 
 
     }
@@ -64,10 +64,8 @@ public class Main {
                     String[] dadosLinha = lines.split(",");
                     jogosPorEstado.put(dadosLinha[14], jogosPorEstado.getOrDefault(dadosLinha[14], 0) + 1);
                 });
-        Entry<String, Integer> minEntry =
-                Collections.min(jogosPorEstado.entrySet(),
+        return Collections.min(jogosPorEstado.entrySet(),
                         Entry.comparingByValue());
-        return minEntry;
     }
 
     private static Entry<String, Integer> getTeamWithMostWins(Path fullDataPath) throws IOException {
@@ -80,10 +78,8 @@ public class Main {
                     String[] dadosLinha = lines.split(",");
                     vitoriasPorTime.put(dadosLinha[10], vitoriasPorTime.getOrDefault(dadosLinha[10], 0) + 1);
                 });
-        Entry<String, Integer> maxEntry =
-                Collections.max(vitoriasPorTime.entrySet(),
+        return Collections.max(vitoriasPorTime.entrySet(),
                         Entry.comparingByValue());
-        return maxEntry;
     }
 
     private static Entry<String, Integer> getPlayerWithMostGols(Path goalsDataPath) throws IOException {
@@ -94,97 +90,82 @@ public class Main {
                     String[] dadosLinha = lines.split(",");
                     jogadorComMaisGols.put(dadosLinha[3], jogadorComMaisGols.getOrDefault(dadosLinha[3], 0) + 1);
                 });
-        Entry<String, Integer> maxEntry =
-                Collections.max(jogadorComMaisGols.entrySet(),
+        return Collections.max(jogadorComMaisGols.entrySet(),
                         Entry.comparingByValue());
-        return maxEntry;
     }
 
     private static Entry<String, Integer> getPlayerWithMostPenaltyGols(Path goalsDataPath) throws IOException {
         Map<String, Integer> jogadorComMaisGolsDePenalty = new HashMap<>();
         Files.lines(goalsDataPath).skip(1)
-                .filter(lines -> isPenaltyValid(lines))
+                .filter(Main::isPenaltyValid)
                 .forEach(lines -> {
                     String[] dadosLinha = lines.split(",");
                     String jogador = dadosLinha[3].replace("\"", "");
                     jogadorComMaisGolsDePenalty.put(jogador, jogadorComMaisGolsDePenalty.getOrDefault(jogador, 0) + 1);
                 });
-        Entry<String, Integer> maxEntry =
-                Collections.max(jogadorComMaisGolsDePenalty.entrySet(),
+        return Collections.max(jogadorComMaisGolsDePenalty.entrySet(),
                         Entry.comparingByValue());
-        return maxEntry;
     }
 
     private static Entry<String, Integer> getPlayerWithMostCounterGols(Path goalsDataPath) throws IOException {
         Map<String, Integer> jogadorComMaisGolsContra = new HashMap<>();
         Files.lines(goalsDataPath).skip(1)
-                .filter(lines -> isConterGoalValid(lines))
+                .filter(Main::isConterGoalValid)
                 .forEach(lines -> {
                     String[] dadosLinha = lines.split(",");
                     String jogador = dadosLinha[3].replace("\"", "");
                     jogadorComMaisGolsContra.put(jogador, jogadorComMaisGolsContra.getOrDefault(jogador, 0) + 1);
                 });
-        Entry<String, Integer> maxEntry =
-                Collections.max(jogadorComMaisGolsContra.entrySet(),
+        return Collections.max(jogadorComMaisGolsContra.entrySet(),
                         Entry.comparingByValue());
-        return maxEntry;
     }
 
     private static Entry<String, Integer> getPlayerWithMostYellowCards(Path cartoesDataPath) throws IOException {
         Map<String, Integer> jogadorComMaisCartaoAmarelo = new HashMap<>();
         Files.lines(cartoesDataPath).skip(1)
-                .filter(lines -> isYellowCardValid(lines))
+                .filter(Main::isYellowCardValid)
                 .forEach(lines -> {
                     String[] dadosLinha = lines.split(",");
                     String jogador = dadosLinha[4].replace("\"", "");
                     jogadorComMaisCartaoAmarelo.put(jogador, jogadorComMaisCartaoAmarelo.getOrDefault(jogador, 0) + 1);
                 });
-        Entry<String, Integer> maxEntry =
-                Collections.max(jogadorComMaisCartaoAmarelo.entrySet(),
+        return Collections.max(jogadorComMaisCartaoAmarelo.entrySet(),
                         Entry.comparingByValue());
-        return maxEntry;
     }
 
     private static Entry<String, Integer> getPlayerWithMostRedCards(Path cartoesDataPath) throws IOException {
         Map<String, Integer> jogadorComMaisCartaoVermelho = new HashMap<>();
         Files.lines(cartoesDataPath).skip(1)
-                .filter(lines -> isRedCardValid(lines))
+                .filter(Main::isRedCardValid)
                 .forEach(lines -> {
                     String[] dadosLinha = lines.split(",");
                     String jogador = dadosLinha[4].replace("\"", "");
                     jogadorComMaisCartaoVermelho.put(jogador, jogadorComMaisCartaoVermelho.getOrDefault(jogador, 0) + 1);
                 });
-        Entry<String, Integer> maxEntry =
-                Collections.max(jogadorComMaisCartaoVermelho.entrySet(),
-                        Entry.comparingByValue());
-        return maxEntry;
+
+        return Collections.max(jogadorComMaisCartaoVermelho.entrySet(),
+                Entry.comparingByValue());
     }
 
-  /*  private static Entry<String, Integer> getScoreMatchWithMostGoals(Path fullDataPath) throws IOException {
+    private static Entry<String, Integer> getScoreMatchWithMostGoals(Path fullDataPath) throws IOException {
         Map<String, Integer> placarComMaisGols = new HashMap<>();
         Files.lines(fullDataPath).skip(1)
-                .filter(lines -> isScoreMatchValid(lines))
                 .forEach(lines -> {
                     String[] dadosLinha = lines.split(",");
                     String placarVisitante = dadosLinha[12].replace("\"", "");
-                    String placarMandante = dadosLinha[13].replace("\"", "");
-                    placarComMaisGols.put(placarVisitante, placarComMaisGols.getOrDefault(jogador, 0) + 1);
+                    String placarMandante =  dadosLinha[13].replace("\"", "");
+                    placarComMaisGols.put(placarMandante + " x " + placarVisitante,
+                            Integer.parseInt(placarMandante)+Integer.parseInt(placarVisitante));
                 });
-        Entry<String, Integer> maxEntry =
-                Collections.max(placarComMaisGols.entrySet(),
+        return Collections.max(placarComMaisGols.entrySet(),
                         Entry.comparingByValue());
-        return maxEntry;
     }
 
-   */
-
-   /* private static boolean isScoreMatchValid(String lines) {
+    private static boolean isScoreMatchValid(String lines) {
         int columnGoalType = 3;
         String[] lineData = lines.split(",");
         return lineData[columnGoalType].equals("\"Vermelho\"");
     }
-
-    */
 
     private static boolean isRedCardValid(String lines) {
         int columnGoalType = 3;
