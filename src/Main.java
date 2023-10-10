@@ -41,16 +41,18 @@ public class Main {
                 golContra.getKey().replace("\"", "") + ", com " + golContra.getValue() + " gols contra");
 
         Entry<String, Integer> cartaoAmarelo = getPlayerWithMostYellowCards(cartoesDataPath);
-        System.out.println("O jogador que mais fez gols Contra é o: " +
+        System.out.println("O jogador que mais tomou cartão amarelo é o: " +
                 cartaoAmarelo.getKey().replace("\"", "") + ", com " + cartaoAmarelo.getValue() + " cartões amarelo");
 
         Entry<String, Integer> cartaoVermelho = getPlayerWithMostRedCards(cartoesDataPath);
-        System.out.println("O jogador que mais fez gols Contra é o: " +
+        System.out.println("O jogador que mais tomou cartão vermelho é o: " +
                 cartaoVermelho.getKey().replace("\"", "") + ", com " + cartaoVermelho.getValue() + " cartões vermelho");
 
-        Entry<String, Integer> maiorPlacar = getScoreMatchWithMostGoals(fullDataPath);
+      /*  Entry<String, Integer> maiorPlacar = getScoreMatchWithMostGoals(fullDataPath);
         System.out.println("O placar da partida com mais gols foi: " +
                 maiorPlacar.getKey().replace("\"", "") + ", X " + maiorPlacar.getValue() + " gols");
+
+       */
 
 
     }
