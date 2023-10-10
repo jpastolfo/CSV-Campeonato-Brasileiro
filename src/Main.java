@@ -19,47 +19,47 @@ public class Main {
         System.out.println("\n======= PROJETO FINAL =======");
         System.out.println("=== CAMPEONATO BRASILEIRO ===\n");
 
-        Entry<String, Integer> vencedor = getTeamWithMostWins(fullDataPath);
+        Entry<String, Integer> vencedor = getTimeComMaisVitorias(fullDataPath);
         System.out.println("O time que mais venceu jogos no ano 2008 foi " +
                 vencedor.getKey().replace("\"", "") +
                 ", com " + vencedor.getValue() + " vitórias.");
 
-        Entry<String, Integer> estado = getStateWithLessGames(fullDataPath);
+        Entry<String, Integer> estado = getEstadoComMenosJogos(fullDataPath);
         System.out.println("O estado com menos jogos entre 2003 e 2022 foi " +
                 estado.getKey().replace("\"", "") + ", com " + estado.getValue() + " jogos.");
 
-        Entry<String, Integer> golsPorJogador = getPlayerWithMostGols(goalsDataPath);
+        Entry<String, Integer> golsPorJogador = getJogadorComMaisGols(goalsDataPath);
         System.out.println("O jogador que mais fez gols é o: " +
                 golsPorJogador.getKey().replace("\"", "") + ", com " + golsPorJogador.getValue() + " gols");
 
-        Entry<String, Integer> penalty = getPlayerWithMostPenaltyGols(goalsDataPath);
+        Entry<String, Integer> penalty = getJogadorComMaisGolsDePenalty(goalsDataPath);
         System.out.println("O jogador que mais fez gols de Penalty é o: " +
                 penalty.getKey().replace("\"", "") + ", com " + penalty.getValue() + " gols");
 
-        Entry<String, Integer> golContra = getPlayerWithMostCounterGols(goalsDataPath);
+        Entry<String, Integer> golContra = getJogadorComMaisGolsContra(goalsDataPath);
         System.out.println("O jogador que mais fez gols Contra é o: " +
                 golContra.getKey().replace("\"", "") + ", com " + golContra.getValue() + " gols contra");
 
-        Entry<String, Integer> cartaoAmarelo = getPlayerWithMostYellowCards(cartoesDataPath);
+        Entry<String, Integer> cartaoAmarelo = getJogadorComMaisCartaoAmarelo(cartoesDataPath);
         System.out.println("O jogador que mais fez gols Contra é o: " +
                 cartaoAmarelo.getKey().replace("\"", "") + ", com " + cartaoAmarelo.getValue() + " cartões amarelo");
 
-        Entry<String, Integer> cartaoVermelho = getPlayerWithMostRedCards(cartoesDataPath);
+        Entry<String, Integer> cartaoVermelho = getJogadorComMaisCartaoVermelho(cartoesDataPath);
         System.out.println("O jogador que mais fez gols Contra é o: " +
                 cartaoVermelho.getKey().replace("\"", "") + ", com " + cartaoVermelho.getValue() + " cartões vermelho");
 
-        Entry<String, Integer> maiorPlacar = getScoreMatchWithMostGoals(fullDataPath);
+        Entry<String, Integer> maiorPlacar = getPlacarComMaisGols(fullDataPath);
         System.out.println("O placar da partida com mais gols foi: " +
                 maiorPlacar.getKey());
 
 
     }
 
-    private static Entry<String, Integer> getStateWithLessGames(Path fullDataPath) throws IOException {
+    private static Entry<String, Integer> getEstadoComMenosJogos(Path fullDataPath) throws IOException {
         Map<String, Integer> jogosPorEstado = new HashMap<>();
         Files.lines(fullDataPath)
                 .skip(1)
-                .filter(lines -> isBetweenYears(lines, 2003, 2022))
+                .filter(lines -> validaEntreAnos(lines, 2003, 2022))
                 .forEach(lines -> {
                     String[] dadosLinha = lines.split(",");
                     jogosPorEstado.put(dadosLinha[14], jogosPorEstado.getOrDefault(dadosLinha[14], 0) + 1);
@@ -68,12 +68,12 @@ public class Main {
                         Entry.comparingByValue());
     }
 
-    private static Entry<String, Integer> getTeamWithMostWins(Path fullDataPath) throws IOException {
+    private static Entry<String, Integer> getTimeComMaisVitorias(Path fullDataPath) throws IOException {
         Map<String, Integer> vitoriasPorTime = new HashMap<>();
         Files.lines(fullDataPath)
                 .skip(1)
-                .filter(lines -> isInYear(lines, 2008))
-                .filter(Main::isTeamValid)
+                .filter(lines -> validaAno(lines, 2008))
+                .filter(Main::validaEquipe)
                 .forEach(lines -> {
                     String[] dadosLinha = lines.split(",");
                     vitoriasPorTime.put(dadosLinha[10], vitoriasPorTime.getOrDefault(dadosLinha[10], 0) + 1);
@@ -82,10 +82,10 @@ public class Main {
                         Entry.comparingByValue());
     }
 
-    private static Entry<String, Integer> getPlayerWithMostGols(Path goalsDataPath) throws IOException {
+    private static Entry<String, Integer> getJogadorComMaisGols(Path goalsDataPath) throws IOException {
         Map<String, Integer> jogadorComMaisGols = new HashMap<>();
         Files.lines(goalsDataPath).skip(1)
-                .filter(Main::isPlayerValid)
+                .filter(Main::validaJogador)
                 .forEach(lines -> {
                     String[] dadosLinha = lines.split(",");
                     jogadorComMaisGols.put(dadosLinha[3], jogadorComMaisGols.getOrDefault(dadosLinha[3], 0) + 1);
@@ -94,10 +94,10 @@ public class Main {
                         Entry.comparingByValue());
     }
 
-    private static Entry<String, Integer> getPlayerWithMostPenaltyGols(Path goalsDataPath) throws IOException {
+    private static Entry<String, Integer> getJogadorComMaisGolsDePenalty(Path goalsDataPath) throws IOException {
         Map<String, Integer> jogadorComMaisGolsDePenalty = new HashMap<>();
         Files.lines(goalsDataPath).skip(1)
-                .filter(Main::isPenaltyValid)
+                .filter(Main::validaPenalty)
                 .forEach(lines -> {
                     String[] dadosLinha = lines.split(",");
                     String jogador = dadosLinha[3].replace("\"", "");
@@ -107,10 +107,10 @@ public class Main {
                         Entry.comparingByValue());
     }
 
-    private static Entry<String, Integer> getPlayerWithMostCounterGols(Path goalsDataPath) throws IOException {
+    private static Entry<String, Integer> getJogadorComMaisGolsContra(Path goalsDataPath) throws IOException {
         Map<String, Integer> jogadorComMaisGolsContra = new HashMap<>();
         Files.lines(goalsDataPath).skip(1)
-                .filter(Main::isConterGoalValid)
+                .filter(Main::validaGolContra)
                 .forEach(lines -> {
                     String[] dadosLinha = lines.split(",");
                     String jogador = dadosLinha[3].replace("\"", "");
@@ -120,10 +120,10 @@ public class Main {
                         Entry.comparingByValue());
     }
 
-    private static Entry<String, Integer> getPlayerWithMostYellowCards(Path cartoesDataPath) throws IOException {
+    private static Entry<String, Integer> getJogadorComMaisCartaoAmarelo(Path cartoesDataPath) throws IOException {
         Map<String, Integer> jogadorComMaisCartaoAmarelo = new HashMap<>();
         Files.lines(cartoesDataPath).skip(1)
-                .filter(Main::isYellowCardValid)
+                .filter(Main::validaCartaoAmarelo)
                 .forEach(lines -> {
                     String[] dadosLinha = lines.split(",");
                     String jogador = dadosLinha[4].replace("\"", "");
@@ -133,10 +133,10 @@ public class Main {
                         Entry.comparingByValue());
     }
 
-    private static Entry<String, Integer> getPlayerWithMostRedCards(Path cartoesDataPath) throws IOException {
+    private static Entry<String, Integer> getJogadorComMaisCartaoVermelho(Path cartoesDataPath) throws IOException {
         Map<String, Integer> jogadorComMaisCartaoVermelho = new HashMap<>();
         Files.lines(cartoesDataPath).skip(1)
-                .filter(Main::isRedCardValid)
+                .filter(Main::validaCartaoVermelho)
                 .forEach(lines -> {
                     String[] dadosLinha = lines.split(",");
                     String jogador = dadosLinha[4].replace("\"", "");
@@ -147,77 +147,71 @@ public class Main {
                 Entry.comparingByValue());
     }
 
-    private static Entry<String, Integer> getScoreMatchWithMostGoals(Path fullDataPath) throws IOException {
+    private static Entry<String, Integer> getPlacarComMaisGols(Path fullDataPath) throws IOException {
         Map<String, Integer> placarComMaisGols = new HashMap<>();
         Files.lines(fullDataPath).skip(1)
                 .forEach(lines -> {
                     String[] dadosLinha = lines.split(",");
                     String placarVisitante = dadosLinha[12].replace("\"", "");
                     String placarMandante =  dadosLinha[13].replace("\"", "");
-                    placarComMaisGols.put(placarMandante + " x " + placarVisitante,
+                    placarComMaisGols.put(placarVisitante + " x " + placarMandante,
                             Integer.parseInt(placarMandante)+Integer.parseInt(placarVisitante));
                 });
         return Collections.max(placarComMaisGols.entrySet(),
                         Entry.comparingByValue());
     }
 
-    private static boolean isScoreMatchValid(String lines) {
-        int columnGoalType = 3;
-        String[] lineData = lines.split(",");
-        return lineData[columnGoalType].equals("\"Vermelho\"");
+    private static boolean validaCartaoVermelho(String lines) {
+        int colunaCartao = 3;
+        String[] dadosLinha = lines.split(",");
+        return dadosLinha[colunaCartao].equals("\"Vermelho\"");
     }
 
-    private static boolean isRedCardValid(String lines) {
-        int columnGoalType = 3;
-        String[] lineData = lines.split(",");
-        return lineData[columnGoalType].equals("\"Vermelho\"");
+    private static boolean validaCartaoAmarelo(String lines) {
+        int colunaCartao = 3;
+        String[] dadosLinha = lines.split(",");
+        return dadosLinha[colunaCartao].equals("\"Amarelo\"");
     }
 
-    private static boolean isYellowCardValid(String lines) {
-        int columnGoalType = 3;
-        String[] lineData = lines.split(",");
-        return lineData[columnGoalType].equals("\"Amarelo\"");
+    private static boolean validaGolContra(String lines) {
+        int colunaTipoGol = 5;
+        String[] dadosLinha = lines.split(",");
+        return dadosLinha[colunaTipoGol].equals("\"Gol Contra\"");
     }
 
-    private static boolean isConterGoalValid(String lines) {
-        int columnGoalType = 5;
-        String[] lineData = lines.split(",");
-        return lineData[columnGoalType].equals("\"Gol Contra\"");
-    }
-
-    private static boolean isPenaltyValid(String lines) {
-        int columnGoalType = 5;
-        String[] lineData = lines.split(",");
-        return lineData[columnGoalType].equals("\"Penalty\"");
+    private static boolean validaPenalty(String lines) {
+        int colunaTipoGol = 5;
+        String[] dadosLinha = lines.split(",");
+        return dadosLinha[colunaTipoGol].equals("\"Penalty\"");
     }
 
 
-    private static boolean isPlayerValid(String lines) {
-        int columnPlayer = 3;
-        String[] lineData = lines.split(",");
-        return (!lineData[columnPlayer].equals("\"-\""));
+    private static boolean validaJogador(String lines) {
+        int colunaJogador = 3;
+        String[] dadosLinha = lines.split(",");
+        return (!dadosLinha[colunaJogador].equals("\"-\""));
     }
 
-    private static boolean isTeamValid(String lines) {
-        int columnTeam = 10;
-        String[] lineData = lines.split(",");
-        return (!lineData[columnTeam].equals("\"-\""));
+    private static boolean validaEquipe(String lines) {
+        int colunaTime = 10;
+        String[] dadosLinha = lines.split(",");
+        return (!dadosLinha[colunaTime].equals("\"-\""));
     }
 
-    private static boolean isInYear(String lines, int yearToCheck) {
-        int columnDate = 2;
-        String[] lineData = lines.split(",");
-        LocalDate data = LocalDate.parse(lineData[columnDate].replace("\"", ""),
+    private static boolean validaAno(String lines, int anoVerificador) {
+        int colunaData = 2;
+        String[] dadosLinha = lines.split(",");
+        LocalDate data = LocalDate.parse(dadosLinha[colunaData].replace("\"", ""),
                 DateTimeFormatter.ofPattern("d/M/yyyy"));
-        return data.getYear() == yearToCheck;
+        return data.getYear() == anoVerificador;
     }
 
-    private static boolean isBetweenYears(String lines, int startingYear, int endingYear) {
-        int columnDate = 2;
-        String[] lineData = lines.split(",");
-        LocalDate data = LocalDate.parse(lineData[columnDate].replace("\"", ""),
+    private static boolean validaEntreAnos(String lines, int anoInicio, int anoFinal) {
+        int colunaData = 2;
+        String[] dadosLinha = lines.split(",");
+        LocalDate data = LocalDate.parse(dadosLinha[colunaData].replace("\"", ""),
                 DateTimeFormatter.ofPattern("d/M/yyyy"));
-        return (data.getYear() >= startingYear || data.getYear() <= endingYear);
+        return (data.getYear() >= anoInicio || data.getYear() <= anoFinal);
     }
 
 }
